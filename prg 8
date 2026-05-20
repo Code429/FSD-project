@@ -1,0 +1,92 @@
+md backend  
+cd backend  
+npm init -y 
+npm install express mongoose cors 
+models/Product.js 
+const mongoose = require("mongoose"); 
+const productSchema = new mongoose.Schema({ name 
+String, price Number 
+}); 
+module.exports = mongoose.model("Product", productSchema); 
+server.js
+const express = require("express"); 
+const mongoose = 
+require("mongoose"); const cors = 
+require("cors"); 
+const Product = require("./models/Product"); 
+const app = express(); 
+app.use(cors()); 
+app.use(express.js
+on()); 
+mongoose.connect("mongodb//127.0.0.127017/shop") 
+.then(() => console.log("Database connected")) 
+.catch(err => console.log(err)); 
+app.get("/products", async (req, res) => 
+{ const products = await 
+Product.find(); res.json(products); 
+});
+app.post("/products", async (req, res) => { 
+const newProduct = new 
+Product(req.body); await 
+newProduct.save(); 
+res.status(201).json(newProduct); 
+}); 
+app.listen(5000, () => { 
+console.log("Server running on port 5000"); 
+});
+import { useEffect, useState } from "react"; 
+function App() { 
+const [products, setProducts] = useState([]);
+const [name, setName] = useState(""); 
+const [price, setPrice] = useState(""); 
+const loadProducts = async () => { 
+const res = await fetch("http//localhost5000/products"); 
+const data = await res.json(); 
+setProducts(data); 
+}; 
+useEffect(() => { 
+loadProducts(); 
+}, []); 
+const handleSubmit = async (e) => { 
+e.preventDefault(); 
+await fetch("http//localhost5000/products", { 
+method "POST", 
+headers { 
+"Content-Type" "application/json", 
+}, 
+body JSON.stringify({ name, price }), 
+}); 
+setName(""); 
+setPrice(""); 
+loadProducts(); 
+}; 
+return ( 
+<div style={{ padding "20px" }}> 
+<h2>Add Product</h2> 
+<form onSubmit={handleSubmit}> 
+<input 
+type="text" 
+placeholder="Product name"
+value={name} 
+onChange={(e) => setName(e.target.value)} 
+/> 
+<input 
+type="number" 
+placeholder="Price" 
+value={price} 
+onChange={(e) => setPrice(e.target.value)} 
+/> 
+<button type="submit">Add</button> 
+</form> 
+<h2>Product List</h2> 
+<ul> 
+{products.map((item) => ( 
+<li key={item._id}> 
+{item.name} - ₹{item.price} 
+</li> 
+))} 
+</ul> 
+</div> 
+); 
+} 
+export default App;
